@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
 import helmet from 'helmet'
@@ -15,11 +14,18 @@ app.use(cors())
 
 // Parse incoming requests with JSON payloads
 // and URL-encoded payloads
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 // Log HTTP requests
 app.use(logger)
+
+// Hide stack traces in production
+if (app.get('env') === 'production') {
+  app.use((err, req, res, next) => {
+    res.status(500).send('Server Error');
+  });
+}
 
 app.router.use(routes)
 
